@@ -1,0 +1,75 @@
+name: CI
+on: pull_request
+
+jobs:
+  lint-and-format:
+    name: Check Python lint and format
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ACTION_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: |
+          pip install -U pip setuptools wheel
+          pip install -r requirements.txt
+      - name: Lint with flake8
+        run: |
+          flake8 \
+          || (gh pr comment ${{ github.event.pull_request.number }} -b "flake8(linter)のチェックに失敗しました。[CI実行のログ](${{ env.ACTION_URL }})を確認して修正し，再度コミット・プッシュしてください。" && exit 1)
+      - name: Check import order with isort
+        run: |
+          isort --check-only --diff --color . \
+          || (gh pr comment ${{ github.event.pull_request.number }} -b "isort(importのソート順調整)のチェックに失敗しました。[CI実行のログ](${{ env.ACTION_URL }})を確認して修正し，再度コミット・プッシュしてください。" && exit 1)
+      - name: Check formatting with black
+        run: |
+          black --check --diff --color . \
+          || (gh pr comment ${{ github.event.pull_request.number }} -b "black(フォーマッタ)のチェックに失敗しました。[CI実行のログ](${{ env.ACTION_URL }})を確認して修正し，再度コミット・プッシュしてください。" && exit 1)
+      - name: Django check
+        run: |
+          python manage.py check \
+          || (gh pr comment ${{ github.event.pull_request.number }} -b "Django設定のチェックに失敗しました。[CI実行のログ](${{ env.ACTION_URL }})を確認して修正し，再度コミット・プッシュしてください。" && exit 1)
+      - name: Migration Diff
+        run: |
+          git diff --diff-filter=MD --exit-code origin/${{ github.base_ref }} -- **/migrations/*.py \
+          || (gh pr comment ${{ github.event.pull_request.number }} -b "一度mainに取り込まれたmigrationファイルを編集してはいけません。元の状態を復元した上で，migration作成を行い直してください。[該当ファイル](${{ env.ACTION_URL }})" && exit 1)
+
+  django-test:
+    name: Django Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ACTION_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: |
+          pip install -U pip setuptools wheel
+          pip install -r requirements.txt
+      - name: Check Migration
+        run: |
+          python manage.py makemigrations --check \
+          || (gh pr comment ${{ github.event.pull_request.number }} -b "マイグレーションファイルとコードに差分があります。migrationを生成し，再度コミット・プッシュしてください。[詳細](${{ env.ACTION_URL }})" && exit 1)
+      - name: Run Django Unit Test
+        run: |
+          python manage.py test \
+          || (gh pr comment ${{ github.event.pull_request.number }} -b "Django Unit Testが失敗しました。[実行ログ](${{ env.ACTION_URL }})を確認して修正し，再度コミット・プッシュしてください。" && exit 1)
+      - name: Finish
+        run: echo "All checks passed!"

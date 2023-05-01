@@ -1,0 +1,9 @@
+[tool.black]
+line-length = 119
+extend-exclude = "(migrations|manage.py|asgi.py|wsgi.py)"
+
+[tool.isort]
+line_length = 119
+profile = "black"
+skip_gitignore = true
+extend_skip_glob = ["**/migrations/*","manage.py","asgi.py","wsgi.py"]
