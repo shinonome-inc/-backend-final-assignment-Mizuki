@@ -95,7 +95,6 @@ class TestSignupView(TestCase):
         self.assertIn("このフィールドは必須です。", form.errors["password2"])
 
     def test_failure_post_with_duplicated_user(self):
-
         User.objects.create_user(username="testuser")
 
         duplicated_data = {
