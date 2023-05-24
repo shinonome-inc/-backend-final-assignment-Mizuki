@@ -7,19 +7,14 @@ from accounts.forms import User
 class TestHomeView(TestCase):
     def setUp(self):
         self.url = reverse("tweets:home")
-        User.objects.create_user(
-            username="testuser",
-            password="testpass"
-        )
+        User.objects.create_user(username="testuser", password="testpass")
 
     def test_success_get(self):
-        self.client.login(
-            username="testuser",
-            password="testpass"
-        )
+        self.client.login(username="testuser", password="testpass")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "tweets/home.html")
+
 
 # class TestTweetCreateView(TestCase):
 #     def test_success_get(self):
