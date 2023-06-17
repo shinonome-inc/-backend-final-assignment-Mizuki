@@ -22,7 +22,7 @@ class SignupView(CreateView):
         user = authenticate(self.request, username=username, password=password)
         login(self.request, user)
         return response
-    
+
 
 class LoginVIew(LoginView):
     form_class = LoginForm
@@ -33,8 +33,8 @@ class LogoutView(LogoutView):
     pass
 
 
-class UserProfileView(LoginRequiredMixin, View): 
-    login_url="../../accounts/login"
+class UserProfileView(LoginRequiredMixin, View):
+    login_url = "../../accounts/login"
 
     def get(self, request, *args, **kwargs):
         return render(request, "accounts/profile.html")
