@@ -201,18 +201,67 @@ class TestSignupView(TestCase):
         self.assertIn("確認用パスワードが一致しません。", form.errors["password2"])
 
 
-# class TestLoginView(TestCase):
-#     def test_success_get(self):
+class TestLoginView(TestCase):
+    def setUp(self):
+        self.url = reverse("accounts:login")
+        User.objects.create_user(username="testuser", password="testpass")
+        
+    def test_success_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "registration/login.html")
 
-#     def test_success_post(self):
+    def test_success_post(self):
+        valid_data = {
+            "username": "testuser",
+            "password": "testpass",
+        }
+        response = self.client.post(self.url, valid_data)
+        
+        self.assertRedirects(
+            response,
+            reverse("tweets:home"),
+            status_code=302,
+            target_status_code=200,
+        )
+        self.assertIn(SESSION_KEY, self.client.session)
 
-#     def test_failure_post_with_not_exists_user(self):
+    def test_failure_post_with_not_exists_user(self):
+        nouser_data = {
+            "username": "testuser1",
+            "password": "testpass",
+        }
+        response = self.client.post(self.url, nouser_data)
+        form = response.context["form"]
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(SESSION_KEY, self.client.session)
+        self.assertContains(response, "正しいユーザー名とパスワードを入力してください。")
 
-#     def test_failure_post_with_empty_password(self):
+    def test_failure_post_with_empty_password(self):
+        emptypass_data = {
+            "username": "testuser",
+            "password": "",
+        }
+        response = self.client.post(self.url, emptypass_data)
+        form = response.context["form"]
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(SESSION_KEY, self.client.session)
+        self.assertContains(response, "このフィールドは必須です。")
 
-
-# class TestLogoutView(TestCase):
-#     def test_success_post(self):
+class TestLogoutView(TestCase):
+    def test_success_post(self):
+        self.url = reverse("accounts:logout")
+        response = self.client.post(self.url)
+        
+        self.assertRedirects(
+            response,
+            reverse("accounts:login"),
+            status_code=302,
+            target_status_code=200,
+        )
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 # class TestUserProfileView(TestCase):

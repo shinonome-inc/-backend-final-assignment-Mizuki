@@ -3,5 +3,8 @@
 {% block title%}Home{% endblock %}
 
 {% block content %}
-<h1>Homeです</h1>
+<h1>Home</h1>
+<a>ユーザー:{{ user.get_username }}</a><br>
+<a href="../../accounts/str:username/" class="btn">プロフィール</a><br><br>
+<a href="../../accounts/logout" class="btn">ログアウト</a>
 {% endblock %}
