@@ -8,7 +8,7 @@ class SignupForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "email")
-        
+
 
 class LoginForm(AuthenticationForm):
     pass

@@ -9,6 +9,7 @@ from .forms import LoginForm
 from .forms import SignupForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+
 class SignupView(CreateView):
     form_class = SignupForm
     template_name = "accounts/signup.html"
@@ -34,6 +35,6 @@ class LogoutView(LogoutView):
 
 class UserProfileView(LoginRequiredMixin, View): 
     login_url="../../accounts/login"
-    
+
     def get(self, request, *args, **kwargs):
         return render(request, "accounts/profile.html")
