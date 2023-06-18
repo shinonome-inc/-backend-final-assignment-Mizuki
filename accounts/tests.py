@@ -1,6 +1,7 @@
 from django.contrib.auth import SESSION_KEY
 from django.test import TestCase
 from django.urls import reverse
+from django.conf import settings
 
 from .forms import User
 
@@ -25,7 +26,7 @@ class TestSignupView(TestCase):
 
         self.assertRedirects(
             response,
-            reverse("tweets:home"),
+            reverse(settings.LOGIN_REDIRECT_URL),
             status_code=302,
             target_status_code=200,
         )
@@ -209,7 +210,7 @@ class TestLoginView(TestCase):
     def test_success_get(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "registration/login.html")
+        self.assertTemplateUsed(response, "accounts/login.html")
 
     def test_success_post(self):
         valid_data = {
@@ -250,13 +251,15 @@ class TestLoginView(TestCase):
 
 
 class TestLogoutView(TestCase):
-    def test_success_post(self):
+    def setUp(self):
         self.url = reverse("accounts:logout")
+
+    def test_success_post(self):
         response = self.client.post(self.url)
 
         self.assertRedirects(
             response,
-            reverse("accounts:login"),
+            reverse(settings.LOGOUT_REDIRECT_URL),
             status_code=302,
             target_status_code=200,
         )
