@@ -1,10 +1,28 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}Twitter Clone{% endblock %}</title>
-</head>
+</head> 
+{% block btn %}
+    <header>
+      <nav>
+        <ul style="text-align: right;">
+        <a href="{% url 'welcome:Welcome' %}" class="btn">Twitter Clone</a>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'tweets:home' %}" class="btn">ホームへ</a></li>
+        <li><a href="{% url 'accounts:logout' %}" class="btn">ログアウト</a></li>
+        <li><a href="{% url 'accounts:user_profile' user.username %}" class="btn">{{ user.username }}</a></li>
+        {% else %}
+        <li><a href="{% url 'accounts:signup' %}" class="btn">ユーザー登録</a></li>
+        <li><a href="{% url 'accounts:login' %}" class="btn">ログイン</a></li>
+        {% endif %}
+        </ul>
+      </nav>
+    </header>
+{% endblock %}
 
 <body>
   {% block content %}
