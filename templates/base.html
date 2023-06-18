@@ -10,7 +10,6 @@
 {% if user.is_authenticated %}
     <header>
       <a>Twitter Clone</a>
-      <p style="text-align: right;">
         <a>
           <a href="{% url 'tweets:home' %}" class="btn">ホームへ</a>
           <a href="{% url 'accounts:logout' %}" class="btn">ログアウト</a>
