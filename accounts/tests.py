@@ -1,7 +1,7 @@
+from django.conf import settings
 from django.contrib.auth import SESSION_KEY
 from django.test import TestCase
 from django.urls import reverse
-from django.conf import settings
 
 from .forms import User
 
