@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>Home</h1>
-<a>ユーザー:{{ user.get_username }}</a><br>
-<a href="../../accounts/str:username/" class="btn">プロフィール</a><br><br>
-<a href="../../accounts/logout" class="btn">ログアウト</a>
+<a>ユーザー:{{ user.username }}</a><br>
+<a href="{% url 'accounts:user_profile' user.username %}" class="btn">プロフィール</a><br><br>
+<a href="{% url 'accounts:logout' %}" class="btn">ログアウト</a>
 {% endblock %}

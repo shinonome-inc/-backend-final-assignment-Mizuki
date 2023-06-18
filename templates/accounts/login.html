@@ -7,6 +7,6 @@
     <button type="submit">ログイン</button>
 </form><br>
 
-<a href="../signup" class="btn">ユーザー登録はこちら</a><br>
-<a href="../../" class="btn">最初に戻る</a>
+<a href="{% url 'accounts:signup' %}" class="btn">ユーザー登録はこちら</a><br>
+<a href="{% url 'welcome:Welcome' %}" class="btn">最初に戻る</a>
 {% endblock %}

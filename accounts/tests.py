@@ -221,7 +221,7 @@ class TestLoginView(TestCase):
 
         self.assertRedirects(
             response,
-            reverse("tweets:home"),
+            reverse(settings.LOGIN_REDIRECT_URL),
             status_code=302,
             target_status_code=200,
         )
@@ -233,10 +233,14 @@ class TestLoginView(TestCase):
             "password": "testpass",
         }
         response = self.client.post(self.url, nouser_data)
+        form = response.context["form"]
 
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(SESSION_KEY, self.client.session)
-        self.assertContains(response, "正しいユーザー名とパスワードを入力してください。")
+        self.assertIn(
+            "正しいユーザー名とパスワードを入力してください。どちらのフィールドも大文字と小文字は区別されます。",
+            form.errors["__all__"]
+            )
 
     def test_failure_post_with_empty_password(self):
         emptypass_data = {
@@ -244,10 +248,11 @@ class TestLoginView(TestCase):
             "password": "",
         }
         response = self.client.post(self.url, emptypass_data)
+        form = response.context["form"]
 
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(SESSION_KEY, self.client.session)
-        self.assertContains(response, "このフィールドは必須です。")
+        self.assertIn("このフィールドは必須です。", form.errors["password"])
 
 
 class TestLogoutView(TestCase):

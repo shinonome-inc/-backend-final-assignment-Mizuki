@@ -2,6 +2,6 @@
 
 {% block content %}
 <h1>プロフィール</h1>
-<a>ユーザー:{{ user.get_username }}</user></a><br>
-<a href="../../tweets/home" class="btn">戻る</a>
+<a>ユーザー:{{ user.get_username }}</a><br>
+<a href="{% url 'tweets:home' %}" class="btn">戻る</a>
 {% endblock %}

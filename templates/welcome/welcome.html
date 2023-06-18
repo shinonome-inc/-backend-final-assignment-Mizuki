@@ -4,6 +4,6 @@
 
 {% block content %}
 <h1>Welcome!</h1>
-<a href="accounts/signup" class="btn">ユーザー登録</a><br>
-<a href="accounts/login" class="btn">ログイン</a>
+<a href="{% url 'accounts:signup' %}" class="btn">ユーザー登録</a><br>
+<a href="{% url 'accounts:login' %}" class="btn">ログイン</a>
 {% endblock %}

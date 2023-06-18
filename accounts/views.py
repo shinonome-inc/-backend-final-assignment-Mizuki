@@ -1,13 +1,13 @@
+from typing import Any, Dict
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import CreateView
+from django.views.generic import CreateView, DetailView
 
-from .forms import LoginForm, SignupForm
+from .models import User
+from .forms import SignupForm
 
 
 class SignupView(CreateView):
@@ -24,16 +24,8 @@ class SignupView(CreateView):
         return response
 
 
-class LoginVIew(auth_views.LoginView):
-    form_class = LoginForm
-
-
-class LogoutView(auth_views.LogoutView):
-    pass
-
-
-class UserProfileView(LoginRequiredMixin, View):
-    login_url = "../../accounts/login"
-
-    def get(self, request, *args, **kwargs):
-        return render(request, "accounts/profile.html")
+class UserProfileView(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = "accounts/profile.html"
+    slug_field = "username"
+    slug_url_kwarg = "username"
