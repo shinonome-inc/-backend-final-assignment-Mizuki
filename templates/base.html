@@ -12,12 +12,12 @@
         <ul style="text-align: right;">
         <a href="{% url 'welcome:Welcome' %}" class="btn">Twitter Clone</a>
         {% if user.is_authenticated %}
-        <li><a href="{% url 'tweets:home' %}" class="btn">ホームへ</a></li>
-        <li><a href="{% url 'accounts:logout' %}" class="btn">ログアウト</a></li>
-        <li><a href="{% url 'accounts:user_profile' user.username %}" class="btn">{{ user.username }}</a></li>
+        <a href="{% url 'tweets:home' %}" class="btn">ホームへ</a>
+        <a href="{% url 'accounts:logout' %}" class="btn">ログアウト</a>
+        <a href="{% url 'accounts:user_profile' user.username %}" class="btn">{{ user.username }}</a>
         {% else %}
-        <li><a href="{% url 'accounts:signup' %}" class="btn">ユーザー登録</a></li>
-        <li><a href="{% url 'accounts:login' %}" class="btn">ログイン</a></li>
+        <a href="{% url 'accounts:signup' %}" class="btn">ユーザー登録</a>
+        <a href="{% url 'accounts:login' %}" class="btn">ログイン</a>
         {% endif %}
         </ul>
       </nav>

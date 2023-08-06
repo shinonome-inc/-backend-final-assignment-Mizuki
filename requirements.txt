@@ -2,3 +2,4 @@ Django>=4.1,<4.2
 black
 flake8
 isort[colors]
+django-debug-toolbar
