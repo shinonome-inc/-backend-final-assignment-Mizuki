@@ -10,7 +10,8 @@ class TestHomeView(TestCase):
     def setUp(self):
         self.url = reverse("tweets:home")
         self.user = User.objects.create_user(username="testuser", password="testpass")
-        Tweet.objects.create(user=self.user, content="test")
+        Tweet.objects.create(user=self.user, content="first")
+        Tweet.objects.create(user=self.user, content="second")
 
     def test_success_get(self):
         self.client.login(username="testuser", password="testpass")
