@@ -132,7 +132,7 @@ LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "tweets:home"
 LOGOUT_REDIRECT_URL = "accounts:login"
 
-SQL_DEBUG = True
+SQL_DEBUG = False
 
 if SQL_DEBUG:
 
