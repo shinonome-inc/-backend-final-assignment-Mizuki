@@ -10,9 +10,7 @@ class HomeView(LoginRequiredMixin, ListView):
     model = Tweet
     template_name = "tweets/home.html"
     context_object_name = "tweet_list"
-
-    def get_queryset(self):
-        return super().get_queryset().select_related("user")
+    queryset = Tweet.objects.select_related("user")
 
 
 class TweetCreateView(LoginRequiredMixin, CreateView):
@@ -31,9 +29,6 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "detail"
     template_name = "tweets/detail.html"
 
-    def get_queryset(self):
-        return super().get_queryset().select_related("user")
-
 
 class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Tweet
@@ -44,6 +39,3 @@ class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         tweet = self.get_object()
         return tweet.user == self.request.user
-
-    def get_queryset(self):
-        return super().get_queryset().select_related("user")

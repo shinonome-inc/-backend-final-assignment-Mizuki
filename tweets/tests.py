@@ -44,7 +44,7 @@ class TestTweetCreateView(TestCase):
             status_code=302,
             target_status_code=200,
         )
-        self.assertEqual(User.objects.count(), first_count + 1)
+        self.assertEqual(Tweet.objects.count(), first_count + 1)
         self.assertEqual(test_tweet.content, valid_data["content"])
 
     def test_failure_post_with_empty_content(self):
@@ -99,7 +99,6 @@ class TestTweetDeleteView(TestCase):
             status_code=302,
             target_status_code=200,
         )
-        self.assertEqual(response.status_code, 302)
         self.assertEqual(Tweet.objects.count(), first_count - 1)
 
     def test_failure_post_with_not_exist_tweet(self):
