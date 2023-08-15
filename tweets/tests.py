@@ -77,7 +77,7 @@ class TestTweetDetailView(TestCase):
 
     def test_success_get(self):
         response = self.client.get(self.url)
-        test_tweet = response.context["detail"]
+        test_tweet = response.context["tweet_detail"]
         self.assertEqual(test_tweet, self.tweet)
         self.assertEqual(response.status_code, 200)
 
