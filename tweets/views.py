@@ -26,13 +26,13 @@ class TweetCreateView(LoginRequiredMixin, CreateView):
 
 class TweetDetailView(LoginRequiredMixin, DetailView):
     model = Tweet
-    context_object_name = "detail"
+    context_object_name = "tweet_detail"
     template_name = "tweets/detail.html"
 
 
 class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Tweet
-    context_object_name = "Delete"
+    context_object_name = "tweet_delete"
     template_name = "tweets/delete.html"
     success_url = reverse_lazy("tweets:home")
 

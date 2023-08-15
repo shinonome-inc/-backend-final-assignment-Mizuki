@@ -7,7 +7,7 @@
 <a>ユーザー:{{ user.username }}</a><br>
 <a href="{% url 'tweets:create' %}" class="btn">ツイート</a>
     {% for tweet in tweet_list %}
-    <div style="padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #191976; color: #ffffff;">
+    <div style="padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #e0ffff; color: #000;">
         <p><a href="{% url 'accounts:user_profile' tweet.user %}" class="btn">{{tweet.user}}</a> {{tweet.created_at}}</p>
         <p>{{tweet.content}}</p>
         <a href="{% url 'tweets:detail' tweet.pk %}" class="btn">詳細</a>
