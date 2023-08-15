@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if tweet_delete.user == request.user %}
+<form method="post">
+    <div style="padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #e0ffffff; color: #000;">
+        <p>{{tweet_delete.user}} {{tweet_delete.created_at}}</p>
+        <p>{{tweet_delete.content}}</p>
+    </div>
+    {% csrf_token %}
+    <a>本当に削除しますか？</a>
+    <button type="submit">削除</button> <button><a href="{% url 'tweets:detail' tweet_delete.pk %}" class="btn">戻る</a></button>
+</form><br>
+{% endif %}
+{% endblock %}

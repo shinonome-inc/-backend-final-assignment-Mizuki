@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div style="padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #e0ffff; color: #000;">
+        <p><a href="{% url 'accounts:user_profile' tweet_detail.user %}" class="btn">{{tweet_detail.user}}</a>{{tweet_detail.created_at}}</p>
+        <p>{{tweet_detail.content}}</p>
+
+    {% if tweet_detail.user == request.user %}
+    <a href="{% url 'tweets:delete' tweet_detail.pk %}" class="btn">削除</a>
+    </div>
+    {% endif %}
+{% endblock %}

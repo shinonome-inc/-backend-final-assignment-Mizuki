@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>プロフィール</h1>
-<a>ユーザー:{{ user.get_username }}</a><br>
-<a href="{% url 'tweets:home' %}" class="btn">戻る</a>
+<h1>{{ profile.username }} のプロフィール</h1>
+{% for tweet in profile_list %}
+<div style="padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #e0ffff; color: #000;">
+    <p>{{tweet.user}} {{tweet.created_at}}</p>
+    <p>{{tweet.content}}</p>
+    <a href="{% url 'tweets:detail' tweet.pk %}" class="btn">詳細</a>
+</div>
+{% endfor %}
 {% endblock %}
