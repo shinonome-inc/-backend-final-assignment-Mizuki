@@ -3,7 +3,7 @@
 {% block content %}
     <h1>{{ profile.username }} のプロフィール</h1>
 
-    {% if request.user == user %}
+    {% if request.user == profile %}
     <p>(´・ω・)</p>
     {% elif is_following %}
         <ul style="text-align: right;">

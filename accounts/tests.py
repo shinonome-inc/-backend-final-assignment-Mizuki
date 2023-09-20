@@ -279,7 +279,7 @@ class TestUserProfileView(TestCase):
         self.user2 = User.objects.create_user(username="testuser2", password="testpass")
         Tweet.objects.create(user=self.user1, content="test")
         Tweet.objects.create(user=self.user2, content="content")
-        self.friendship = FriendShip.objects.create(follower=self.user1, following=self.user2)
+        self.friendship = FriendShip.objects.create(follower=self.user1, followee=self.user2)
         self.url = reverse("accounts:user_profile", kwargs={"username": "testuser1"})
 
     def test_success_get(self):
@@ -287,7 +287,7 @@ class TestUserProfileView(TestCase):
         response = self.client.get(self.url)
         test_list = response.context["profile_list"]
         test_following_count = FriendShip.objects.filter(follower=self.user1).count()
-        test_follower_count = FriendShip.objects.filter(following=self.user1).count()
+        test_follower_count = FriendShip.objects.filter(followee=self.user1).count()
 
         self.assertQuerysetEqual(test_list, Tweet.objects.filter(user=self.user1), ordered=False)
         self.assertEqual(response.status_code, 200)
@@ -343,7 +343,7 @@ class TestUnfollowView(TestCase):
         self.user1 = User.objects.create_user(username="testuser1", password="testpass")
         self.user2 = User.objects.create_user(username="testuser2", password="testpass")
         self.client.login(username="testuser1", password="testpass")
-        FriendShip.objects.create(follower=self.user1, following=self.user2)
+        FriendShip.objects.create(follower=self.user1, followee=self.user2)
 
     def test_success_post(self):
         self.url = reverse("accounts:unfollow", kwargs={"username": "testuser2"})

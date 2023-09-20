@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import UniqueConstraint
@@ -8,8 +9,9 @@ class User(AbstractUser):
 
 
 class FriendShip(models.Model):
-    follower = models.ForeignKey(User, related_name="follower", on_delete=models.CASCADE)
-    following = models.ForeignKey(User, related_name="following", on_delete=models.CASCADE)
+    follower = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="follower", on_delete=models.CASCADE)
+    followee = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="followee", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        constraints = [UniqueConstraint(fields=["follower", "following"], name="unique_friendship")]
+        constraints = [UniqueConstraint(fields=["follower", "followee"], name="unique_friendship")]
