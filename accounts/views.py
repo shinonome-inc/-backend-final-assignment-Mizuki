@@ -79,13 +79,13 @@ class UnFollowView(LoginRequiredMixin, View):
 
 class FollowingListView(LoginRequiredMixin, ListView):
     model = User
-    template_name = "accounts/following_list.html"
+    template_name = "accounts/followee_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = get_object_or_404(User, username=self.kwargs["username"])
 
-        context["following_list"] = FriendShip.objects.filter(follower=user).select_related("followee")
+        context["followee_list"] = FriendShip.objects.filter(follower=user).select_related("followee")
         return context
 
 

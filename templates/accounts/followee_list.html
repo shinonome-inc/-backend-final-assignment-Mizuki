@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>フォロー</h1>
+    {% if not followee_list %}
+        <p>フォロー中のユーザーはいません</p>
+    {% else %}
+    <ul>
+        {% for followees in followee_list %}
+            <li><a  href="{% url 'accounts:user_profile' followees.followee.username %}" class="btn">{{ followees.followee.username }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+{% endblock %}
