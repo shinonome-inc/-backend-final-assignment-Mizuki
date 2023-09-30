@@ -6,20 +6,13 @@
 <h1>Home</h1>
 <a>ユーザー:{{ user.username }}</a>
 
-<form action="{% url 'tweets:create' %}">
-    {% csrf_token %}
-    <button class="icon">ツイート</button>
-</form>
-
+    <button class="icon" onclick="location.href='{% url 'tweets:create' %}'">ツイート</button>
     {% for tweet in tweet_list %}
     <div class="tweet-content">
         <div class="icon-and-data">
-                <form action="{% url 'accounts:user_profile' tweet.user %}">
-                {% csrf_token %}
-                <button class="icon">
+                <button class="icon" onclick="location.href='{% url 'accounts:user_profile' tweet.user %}'">
                     {{ tweet.user }}
                 </button>
-                </form>
             <div class="data">
                 <p>{{ tweet.created_at }}</p>
             </div>
