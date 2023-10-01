@@ -1,11 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ profile.username }} のプロフィール</h1>
+    <h1>{{ profile.username }} のプロフィール</h1>
+
+    {% if request.user == profile %}
+    <p>(´・ω・)</p>
+    {% elif is_following %}
+        <ul style="text-align: right;">
+            <form action="{% url 'accounts:unfollow' profile.username %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="unfollow-button">フォロー解除</button>
+            </form>
+        </ul>
+    {% else %}
+        <ul style="text-align: right;">
+            <form action="{% url 'accounts:follow' profile.username %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="follow-button">フォロー</button>
+            </form>
+        </ul>
+    {% endif %}
+
+    <table>
+        <button class="number-counter" onclick="location.href='{% url 'accounts:following_list' profile.username %}'">フォロー中: {{ following_count }}人</button>
+        <button class="number-counter"onclick="location.href='{% url 'accounts:follower_list' profile.username %}'">フォロワー: {{ follower_count }}人</button>
+    </table>
+    
 {% for tweet in profile_list %}
-<div style="padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #e0ffff; color: #000;">
-    <p>{{tweet.user}} {{tweet.created_at}}</p>
-    <p>{{tweet.content}}</p>
+<div class="tweet-content">
+    <div class="icon-and-data">
+        <div class="profile-icon">{{ tweet.user }}</div>
+        <div class="data">{{ tweet.created_at }}</div>
+    </div>
+
+    <p>{{ tweet.content }}</p>
     <a href="{% url 'tweets:detail' tweet.pk %}" class="btn">詳細</a>
 </div>
 {% endfor %}

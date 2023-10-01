@@ -4,13 +4,28 @@
 
 {% block content %}
 <h1>Home</h1>
-<a>ユーザー:{{ user.username }}</a><br>
-<a href="{% url 'tweets:create' %}" class="btn">ツイート</a>
+<a>ユーザー:{{ user.username }}</a>
+
+    <button class="icon" onclick="location.href='{% url 'tweets:create' %}'">ツイート</button>
     {% for tweet in tweet_list %}
-    <div style="padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #e0ffff; color: #000;">
-        <p><a href="{% url 'accounts:user_profile' tweet.user %}" class="btn">{{tweet.user}}</a> {{tweet.created_at}}</p>
+    <div class="tweet-content">
+        <div class="icon-and-data">
+                <button class="icon" onclick="location.href='{% url 'accounts:user_profile' tweet.user %}'">
+                    {{ tweet.user }}
+                </button>
+            <div class="data">
+                <p>{{ tweet.created_at }}</p>
+            </div>
+        </div>
         <p>{{tweet.content}}</p>
         <a href="{% url 'tweets:detail' tweet.pk %}" class="btn">詳細</a>
     </div>    
     {% endfor %}
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li {% if message.tag %} class="{{ message.tag }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}
