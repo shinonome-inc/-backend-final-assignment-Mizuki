@@ -1,17 +1,17 @@
 # from django.shortcuts import render
-from typing import Any
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models.query import QuerySet
-from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, View
-from django.shortcuts import get_object_or_404
+from django.db.models import Count, Prefetch
 from django.http import JsonResponse
-from django.db.models import Prefetch, Count
+from django.shortcuts import get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, View
 
-from .models import Tweet, Like
+from .models import Like, Tweet
 
-#ListViewはquerysetで取得する
-#queryset使わずcontextで渡すならTemplateViewでいい
+# ListViewはquerysetで取得する
+# queryset使わずcontextで渡すならTemplateViewでいい
+
+
 class HomeView(LoginRequiredMixin, ListView):
     model = Tweet
     template_name = "tweets/home.html"
@@ -19,13 +19,12 @@ class HomeView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Tweet.objects.select_related("user").prefetch_related(
-            Prefetch("likes",
-                     queryset=Like.objects.filter(user=user),
-                     to_attr="is_liked"
-            )
-        ).annotate(liked_count=Count("likes"))
-        return queryset  
+        queryset = (
+            Tweet.objects.select_related("user")
+            .prefetch_related(Prefetch("likes", queryset=Like.objects.filter(user=user), to_attr="is_liked"))
+            .annotate(liked_count=Count("likes"))
+        )
+        return queryset
 
 
 class TweetCreateView(LoginRequiredMixin, CreateView):
@@ -41,8 +40,17 @@ class TweetCreateView(LoginRequiredMixin, CreateView):
 
 class TweetDetailView(LoginRequiredMixin, DetailView):
     model = Tweet
-    context_object_name = "tweet_detail"
+    context_object_name = "tweet"
     template_name = "tweets/detail.html"
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = (
+            Tweet.objects.select_related("user")
+            .prefetch_related(Prefetch("likes", queryset=Like.objects.filter(user=user), to_attr="is_liked"))
+            .annotate(liked_count=Count("likes"))
+        )
+        return queryset
 
 
 class TweetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

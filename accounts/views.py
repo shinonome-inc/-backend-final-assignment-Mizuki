@@ -2,12 +2,13 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count, Prefetch
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, View
 
-from tweets.models import Tweet
+from tweets.models import Like, Tweet
 
 from .forms import SignupForm
 from .models import FriendShip, User
@@ -38,7 +39,12 @@ class UserProfileView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         user = self.object
 
-        context["profile_list"] = Tweet.objects.filter(user=user).select_related("user")
+        context["profile_list"] = (
+            Tweet.objects.filter(user=user)
+            .select_related("user")
+            .prefetch_related(Prefetch("likes", queryset=Like.objects.filter(user=user), to_attr="is_liked"))
+            .annotate(liked_count=Count("likes"))
+        )
         context["following_count"] = FriendShip.objects.filter(follower=user).count()
         context["follower_count"] = FriendShip.objects.filter(followee=user).count()
         context["is_following"] = FriendShip.objects.filter(followee=user, follower=self.request.user).exists()
