@@ -5,6 +5,7 @@ from accounts.forms import User
 
 from .models import Like, Tweet
 
+
 class BaseTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="testpass")
