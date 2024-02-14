@@ -5,12 +5,17 @@ from accounts.forms import User
 
 from .models import Like, Tweet
 
-
-class TestHomeView(TestCase):
+class BaseTestCase(TestCase):
     def setUp(self):
-        self.url = reverse("tweets:home")
         self.user = User.objects.create_user(username="testuser", password="testpass")
-        Tweet.objects.create(user=self.user, content="first")
+        self.client.login(username="testuser", password="testpass")
+        self.tweet = Tweet.objects.create(user=self.user, content="test")
+
+
+class TestHomeView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = reverse("tweets:home")
         Tweet.objects.create(user=self.user, content="second")
 
     def test_success_get(self):
@@ -22,7 +27,7 @@ class TestHomeView(TestCase):
         self.assertTemplateUsed(response, "tweets/home.html")
 
 
-class TestTweetCreateView(TestCase):
+class TestTweetCreateView(BaseTestCase):
     def setUp(self):
         self.url = reverse("tweets:create")
         self.user = User.objects.create_user(username="testuser", password="testpass")
@@ -68,12 +73,10 @@ class TestTweetCreateView(TestCase):
         self.assertIn("この値は 140 文字以下でなければなりません( 141 文字になっています)。", form.errors["content"])
 
 
-class TestTweetDetailView(TestCase):
+class TestTweetDetailView(BaseTestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.tweet = Tweet.objects.create(user=self.user, content="test")
+        super().setUp()
         self.url = reverse("tweets:detail", kwargs={"pk": self.tweet.pk})
-        self.client.login(username="testuser", password="testpass")
 
     def test_success_get(self):
         response = self.client.get(self.url)
@@ -82,12 +85,10 @@ class TestTweetDetailView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestTweetDeleteView(TestCase):
+class TestTweetDeleteView(BaseTestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.tweet = Tweet.objects.create(user=self.user, content="test")
+        super().setUp()
         self.url = reverse("tweets:delete", kwargs={"pk": self.tweet.pk})
-        self.client.login(username="testuser", password="testpass")
 
     def test_success_post(self):
         first_count = Tweet.objects.count()
@@ -122,11 +123,9 @@ class TestTweetDeleteView(TestCase):
         self.assertEqual(Tweet.objects.count(), first_count)
 
 
-class TestLikeView(TestCase):
+class TestLikeView(BaseTestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.tweet = Tweet.objects.create(user=self.user, content="test")
-        self.client.login(username="testuser", password="testpass")
+        super().setUp()
 
     def test_success_post(self):
         self.url = reverse("tweets:like", kwargs={"pk": self.tweet.pk})
@@ -154,11 +153,9 @@ class TestLikeView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestUnLikeView(TestCase):
+class TestUnLikeView(BaseTestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.tweet = Tweet.objects.create(user=self.user, content="test")
-        self.client.login(username="testuser", password="testpass")
+        super().setUp()
         self.client.post(reverse("tweets:like", kwargs={"pk": self.tweet.pk}))
 
     def test_success_post(self):

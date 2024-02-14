@@ -21,22 +21,31 @@ const Likebutton = async (tweet) => {
             "X-CSRFToken": csrftoken,
         },
     }
-    const response = await fetch(url, data);
-    const tweet_data = await response.json();
-    changeStyle(tweet_data, tweet);
+
+    try{
+        const response = await fetch(url, data);
+        if(!response.ok){
+            throw new Error('Response error');
+        }
+        const tweet_data = await response.json();
+        changeStyle(tweet_data, tweet);
+    } catch(error){
+        console.log(error.message);
+    }
 }
 
 const changeStyle = (tweet_data, selector) => {
     const count = document.querySelector(`[name="count_${tweet_data.tweet_id}"]`)
+    let actionUrl;
 
     if (tweet_data.is_liked) {
-        unlike_url = `/tweets/${tweet_data.tweet_id}/unlike/`
-        selector.setAttribute('data-url', unlike_url);
+        actionUrl = `/tweets/${tweet_data.tweet_id}/unlike/`
+        selector.setAttribute('data-url', actionUrl);
         selector.innerHTML = "いいね解除";
         count.innerHTML = tweet_data.liked_count;
     } else {
-        like_url = `/tweets/${tweet_data.tweet_id}/like/`
-        selector.setAttribute('data-url', like_url);
+        actionUrl = `/tweets/${tweet_data.tweet_id}/like/`
+        selector.setAttribute('data-url', actionUrl);
         selector.innerHTML = "いいね";
         count.innerHTML = tweet_data.liked_count;
     }
