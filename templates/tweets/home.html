@@ -6,7 +6,17 @@
 <h1>Home</h1>
 <a>ユーザー:{{ user.username }}</a>
 
+{% if messages %}
+    <ul class="messages" style="text-align: center;">
+        {% for message in messages %}
+            <p {% if message.tag %} class="{{ message.tag }}"{% endif %}>{{ message }}</p>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+    <ul style="text-align: right;">
     <button class="icon" onclick="location.href='{% url 'tweets:create' %}'">ツイート</button>
+    </ul>
     {% for tweet in tweet_list %}
     <div class="tweet-content">
         <div class="icon-and-data">
@@ -18,6 +28,9 @@
             </div>
         </div>
         <p>{{tweet.content}}</p>
+
+        {% include "tweets/like.html" %}
+
         <a href="{% url 'tweets:detail' tweet.pk %}" class="btn">詳細</a>
     </div>    
     {% endfor %}

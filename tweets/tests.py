@@ -3,14 +3,20 @@ from django.urls import reverse
 
 from accounts.forms import User
 
-from .models import Tweet
+from .models import Like, Tweet
 
 
-class TestHomeView(TestCase):
+class BaseTestCase(TestCase):
     def setUp(self):
-        self.url = reverse("tweets:home")
         self.user = User.objects.create_user(username="testuser", password="testpass")
-        Tweet.objects.create(user=self.user, content="first")
+        self.client.login(username="testuser", password="testpass")
+        self.tweet = Tweet.objects.create(user=self.user, content="test")
+
+
+class TestHomeView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = reverse("tweets:home")
         Tweet.objects.create(user=self.user, content="second")
 
     def test_success_get(self):
@@ -22,7 +28,7 @@ class TestHomeView(TestCase):
         self.assertTemplateUsed(response, "tweets/home.html")
 
 
-class TestTweetCreateView(TestCase):
+class TestTweetCreateView(BaseTestCase):
     def setUp(self):
         self.url = reverse("tweets:create")
         self.user = User.objects.create_user(username="testuser", password="testpass")
@@ -68,26 +74,22 @@ class TestTweetCreateView(TestCase):
         self.assertIn("この値は 140 文字以下でなければなりません( 141 文字になっています)。", form.errors["content"])
 
 
-class TestTweetDetailView(TestCase):
+class TestTweetDetailView(BaseTestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.tweet = Tweet.objects.create(user=self.user, content="test")
+        super().setUp()
         self.url = reverse("tweets:detail", kwargs={"pk": self.tweet.pk})
-        self.client.login(username="testuser", password="testpass")
 
     def test_success_get(self):
         response = self.client.get(self.url)
-        test_tweet = response.context["tweet_detail"]
+        test_tweet = response.context["tweet"]
         self.assertEqual(test_tweet, self.tweet)
         self.assertEqual(response.status_code, 200)
 
 
-class TestTweetDeleteView(TestCase):
+class TestTweetDeleteView(BaseTestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.tweet = Tweet.objects.create(user=self.user, content="test")
+        super().setUp()
         self.url = reverse("tweets:delete", kwargs={"pk": self.tweet.pk})
-        self.client.login(username="testuser", password="testpass")
 
     def test_success_post(self):
         first_count = Tweet.objects.count()
@@ -122,18 +124,62 @@ class TestTweetDeleteView(TestCase):
         self.assertEqual(Tweet.objects.count(), first_count)
 
 
-# class TestLikeView(TestCase):
-#     def test_success_post(self):
+class TestLikeView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
 
-#     def test_failure_post_with_not_exist_tweet(self):
+    def test_success_post(self):
+        self.url = reverse("tweets:like", kwargs={"pk": self.tweet.pk})
+        first_count = Like.objects.count()
+        response = self.client.post(self.url)
 
-#     def test_failure_post_with_liked_tweet(self):
+        self.assertEqual(Like.objects.count(), first_count + 1)
+        self.assertEqual(response.status_code, 200)
+
+    def test_failure_post_with_not_exist_tweet(self):
+        self.url = reverse("tweets:like", kwargs={"pk": self.tweet.pk + 1})
+        first_count = Like.objects.count()
+        response = self.client.post(self.url)
+
+        self.assertEqual(Like.objects.count(), first_count)
+        self.assertEqual(response.status_code, 404)
+
+    def test_failure_post_with_liked_tweet(self):
+        self.url = reverse("tweets:like", kwargs={"pk": self.tweet.pk})
+        response = self.client.post(self.url)
+        first_count = Like.objects.count()
+        self.client.post(self.url)
+
+        self.assertEqual(Like.objects.count(), first_count)
+        self.assertEqual(response.status_code, 200)
 
 
-# class TestUnLikeView(TestCase):
+class TestUnLikeView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.client.post(reverse("tweets:like", kwargs={"pk": self.tweet.pk}))
 
-#     def test_success_post(self):
+    def test_success_post(self):
+        self.url = reverse("tweets:unlike", kwargs={"pk": self.tweet.pk})
+        first_count = Like.objects.count()
+        response = self.client.post(self.url)
 
-#     def test_failure_post_with_not_exist_tweet(self):
+        self.assertEqual(Like.objects.count(), first_count - 1)
+        self.assertEqual(response.status_code, 200)
 
-#     def test_failure_post_with_unliked_tweet(self):
+    def test_failure_post_with_not_exist_tweet(self):
+        self.url = reverse("tweets:unlike", kwargs={"pk": self.tweet.pk + 1})
+        first_count = Like.objects.count()
+        response = self.client.post(self.url)
+
+        self.assertEqual(Like.objects.count(), first_count)
+        self.assertEqual(response.status_code, 404)
+
+    def test_failure_post_with_unliked_tweet(self):
+        self.url = reverse("tweets:unlike", kwargs={"pk": self.tweet.pk})
+        response = self.client.post(self.url)
+        first_count = Like.objects.count()
+        self.client.post(self.url)
+
+        self.assertEqual(Like.objects.count(), first_count)
+        self.assertEqual(response.status_code, 200)
